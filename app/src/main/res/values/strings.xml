@@ -1,0 +1,67 @@
+<resources>
+    <string name="app_name">Coach Assistant</string>
+    <string name="clients">Clients</string>
+    <string name="view_client">View Client</string>
+    <string name="search">Search</string>
+    <string name="name">Name:</string>
+
+    <!-- new client fragment -->
+    <string name="new_client">New Client</string>
+    <string name="done">Done</string>
+
+    <!-- edit client fragment -->
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="date_of_birth">DOB:</string>
+    <string name="location">Location:</string>
+    <string name="time_zone">Time Zone:</string>
+    <string name="sleep_patterns">Sleep Patterns</string>
+    <string name="diet">Diet</string>
+    <string name="exercise">Exercise/Fitness</string>
+    <string name="substance_use">Substance Use</string>
+    <string name="additional_info">Other</string>
+    <string name="expectations">Expectations</string>
+    <string name="date_format_hint">mm/dd/yyyy</string>
+    <string name="active">Active?</string>
+
+    <!--delete dialog fragment-->
+    <string name="delete_client_prompt">Delete this client?</string>
+
+    <!--general error-->
+    <string name="error_text">Critical error. Please contact customer support.</string>
+    <string name="set_client_name_alert">Please enter a name for the client first!</string>
+
+    <string name="no_name">No Name!</string>
+    <string name="confirm_delete_client">Delete Client?</string>
+    <string name="confirm_delete_session">Delete Session?</string>
+    <string name="delete_client_dialog">Do you want to delete this client and all of their sessions? You cannot undo this action.</string>
+    <string name="error">Error!</string>
+    <string name="no_clients">No clients yet!</string>
+    <string name="order_newest_first">Order by (Newest First)</string>
+    <string name="order_oldest_first">Order by (Oldest First)</string>
+    <string name="order_paid_first">Order by (Paid First)</string>
+    <string name="order_unpaid_first">Order by (Unpaid First)</string>
+    <string name="newest_first">Newest First</string>
+    <string name="oldest_first">Oldest First</string>
+    <string name="new_session">New Session</string>
+    <string name="sessions">Sessions</string>
+    <string name="client_info">Client Info</string>
+
+    <string name="paid">Paid</string>
+    <string name="unpaid">Unpaid</string>
+    <string name="session_notes">Session Notes:</string>
+    <string name="no_sessions">No Sessions Yet!</string>
+    <string name="client_name">Client: </string>
+    <string name="paid_prompt">Paid?</string>
+    <string name="session_date">Select Date</string>
+    <string name="select_time">Select Time</string>
+    <string name="session_notes_hint">Session notes</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">delete</string>
+    <string name="delete_session_dialog">Delete this session? You cannot undo this action.</string>
+    <string name="choose_date_session">Select Session Date:</string>
+    <string name="choose_time_session">Choose a time for the session:</string>
+    <string name="set_session_date">Set a session date first!</string>
+    <string name="session_with_semicolon">Session: </string>
+</resources>
