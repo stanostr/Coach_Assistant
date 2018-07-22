@@ -119,7 +119,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/session_notes_hint"
-            android:inputType="textAutoComplete"
+            android:inputType="textAutoComplete|textMultiLine|textCapSentences"
             android:maxLines = "200"
             android:scrollbars = "vertical"/>
     </LinearLayout>

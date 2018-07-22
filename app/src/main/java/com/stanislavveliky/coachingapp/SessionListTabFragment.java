@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import static com.stanislavveliky.coachingapp.model.DatabaseHandler.NEWEST_FIRST;
+import static com.stanislavveliky.coachingapp.model.DatabaseHandler.OLDEST_FIRST;
+import static com.stanislavveliky.coachingapp.model.DatabaseHandler.PAID_FIRST;
+import static com.stanislavveliky.coachingapp.model.DatabaseHandler.UNPAID_FIRST;
 
 
 /**
@@ -90,15 +93,19 @@ public class SessionListTabFragment extends Fragment {
                         {
                             case R.id.newest_first:
                                 mOrderMenuButton.setText(R.string.order_newest_first);
+                                updateRecyclerView(NEWEST_FIRST);
                                 return true;
                             case R.id.oldest_first:
                                 mOrderMenuButton.setText(R.string.order_oldest_first);
+                                updateRecyclerView(OLDEST_FIRST);
                                 return true;
                             case R.id.paid:
                                 mOrderMenuButton.setText(R.string.order_paid_first);
+                                updateRecyclerView(PAID_FIRST);
                                 return true;
                             case R.id.unpaid:
                                 mOrderMenuButton.setText(R.string.order_unpaid_first);
+                                updateRecyclerView(UNPAID_FIRST);
                                 return true;
                             default: return true;
                         }

@@ -114,10 +114,10 @@ public class DatabaseHandler {
                 break;
             case OLDEST_FIRST:   orderBy= SessionTable.Cols.DATE + " ASC";
                 break;
-            case PAID_FIRST: orderBy = SessionTable.Cols.IS_PAID + "DESC, " +
+            case PAID_FIRST: orderBy = SessionTable.Cols.IS_PAID + " DESC, " +
                     SessionTable.Cols.DATE + " DESC";
                 break;
-            case UNPAID_FIRST: orderBy = SessionTable.Cols.IS_PAID + "ASC, " +
+            case UNPAID_FIRST: orderBy = SessionTable.Cols.IS_PAID + " ASC, " +
                     SessionTable.Cols.DATE + " DESC";
                 break;
             default: orderBy = null;
