@@ -27,8 +27,12 @@ public class ApplicationCursorWrapper extends android.database.CursorWrapper {
         String firstName = getString(getColumnIndex(ClientTable.Cols.FIRST_NAME));
         String lastName = getString(getColumnIndex(ClientTable.Cols.LAST_NAME));
         String location = getString(getColumnIndex(ClientTable.Cols.LOCATION));
+        String phoneNumber = getString(getColumnIndex(ClientTable.Cols.PHONE_NUMBER));
+        String email = getString(getColumnIndex(ClientTable.Cols.EMAIL));
         String timeZone = getString(getColumnIndex(ClientTable.Cols.TIME_ZONE));
         String dateOfBirthString = getString(getColumnIndex(ClientTable.Cols.DOB));
+        long dateOfBirth = getLong(getColumnIndex(ClientTable.Cols.DATE_OF_BIRTH));
+
 
         boolean gender = (getInt(getColumnIndex(ClientTable.
                 Cols.GENDER))==1) ? true: false ;
@@ -48,8 +52,12 @@ public class ApplicationCursorWrapper extends android.database.CursorWrapper {
         client.setFirstName(firstName);
         client.setLastName(lastName);
         client.setLocation(location);
-        client.setTimeZone(timeZone);
+        client.setPhoneNumber(phoneNumber);
+        client.setEmail(email);
+        client.setTimeZoneString(timeZone);
         client.setDateOfBirthString(dateOfBirthString);
+        if(dateOfBirth!=0)
+            client.setDateOfBirth(new Date(dateOfBirth));
         client.setGender(gender);
         client.setDiet(diet);
         client.setExercise(exercise);

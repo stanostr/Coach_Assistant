@@ -108,7 +108,8 @@ public class SessionFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 FragmentManager fragmentManager = getFragmentManager();
-                SessionDateDialogFragment dialog = SessionDateDialogFragment.newInstance(mSession.getSessionDate());
+                DateDialogFragment dialog = DateDialogFragment.newInstance(mSession.getSessionDate(),
+                        getResources().getString(R.string.choose_date_session));
                 dialog.setTargetFragment(SessionFragment.this, REQUEST_DATE);
                 dialog.show(fragmentManager, DIALOG_DATE);
                 mDateUnset = false;

@@ -1,7 +1,5 @@
 package com.stanislavveliky.coachingapp.model;
 
-import com.stanislavveliky.coachingapp.R;
-
 import java.util.Date;
 import java.util.UUID;
 import android.util.Log;
@@ -18,8 +16,11 @@ public class Client {
     private String mFirstName;
     private String mLastName;
     private String mLocation;
-    private String mTimeZone;
+    private String mTimeZoneString;
     private String mDateOfBirthString;
+
+    private String mPhoneNumber;
+    private String mEmail;
 
     private Date mDateOfBirth; //age is a derived attribute from DOB
     private boolean mGender; //true for male, false for female
@@ -74,12 +75,12 @@ public class Client {
         mLocation = location;
     }
 
-    public String getTimeZone() {
-        return mTimeZone;
+    public String getTimeZoneString() {
+        return mTimeZoneString;
     }
 
-    public void setTimeZone(String timeZone) {
-        mTimeZone = timeZone;
+    public void setTimeZoneString(String timeZoneString) {
+        mTimeZoneString = timeZoneString;
     }
 
     public String getDateOfBirthString() {
@@ -88,6 +89,14 @@ public class Client {
 
     public void setDateOfBirthString(String dateOfBirthString) {
         mDateOfBirthString = dateOfBirthString;
+    }
+
+    public Date getDateOfBirth() {
+        return mDateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        mDateOfBirth = dateOfBirth;
     }
 
     public boolean isGender() {
@@ -182,7 +191,6 @@ public class Client {
         }
         else
         {
-            Log.d(TAG, "Client has both names");
             return mFirstName + " " + mLastName;
         }
     }
@@ -190,7 +198,7 @@ public class Client {
     public boolean isEmpty()
     {
         if(mFirstName==null && mLastName==null &&
-                mLocation==null && mTimeZone==null &&
+                mLocation==null && mTimeZoneString ==null &&
                 mDiet==null && mSleep==null &&
                 mSubstanceUse==null && mDateOfBirthString==null &&
                 mOtherDetails==null && mExercise==null &&
@@ -198,4 +206,19 @@ public class Client {
         else return false;
     }
 
+    public String getPhoneNumber() {
+        return mPhoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        mPhoneNumber = phoneNumber;
+    }
+
+    public String getEmail() {
+        return mEmail;
+    }
+
+    public void setEmail(String email) {
+        mEmail = email;
+    }
 }

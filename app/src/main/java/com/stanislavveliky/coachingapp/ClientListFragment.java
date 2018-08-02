@@ -196,6 +196,9 @@ public class ClientListFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), NewClientActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.search_clients:
+                getActivity().onSearchRequested();
+                return true;
             default: return true;
         }
     }

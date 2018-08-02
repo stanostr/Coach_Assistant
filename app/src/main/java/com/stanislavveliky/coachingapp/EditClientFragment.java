@@ -1,9 +1,10 @@
 package com.stanislavveliky.coachingapp;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -18,14 +19,21 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.support.v4.app.FragmentManager;
 
 
 import com.stanislavveliky.coachingapp.model.Client;
 import com.stanislavveliky.coachingapp.model.DatabaseHandler;
 
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.UUID;
 
-import static com.stanislavveliky.coachingapp.SingleEditTextFragmentActivity.*;
+import static com.stanislavveliky.coachingapp.SessionFragment.EXTRA_DATE;
+import static com.stanislavveliky.coachingapp.SingleEditTextFragment.*;
+
 
 /**
  * Created by Stanislav Ostrovskii 7/5/2018
@@ -35,18 +43,20 @@ import static com.stanislavveliky.coachingapp.SingleEditTextFragmentActivity.*;
 
 public class EditClientFragment extends Fragment {
     private static final String ARG_CLIENT_ID = "client_id";
+    private static final int REQUEST_DOB = 0;
+    private static final String DIALOG_DOB = "DialogDoB";
 
     private Client mClient;
+    private Callbacks mCallbacks;
 
     private ActionBar mToolbar;
     private EditText mFirstNameEditText;
     private EditText mLastNameEditText;
     private EditText mDOBEditText;
-    private EditText mLocationEditText;
-    private EditText mTimeZoneEditText;
 
     private Switch mActiveSwitch;
 
+    private Button mExpandContactButton;
     private Button mExpandDietButton;
     private Button mExpandSleepButton;
     private Button mExpandExerciseButton;
@@ -54,6 +64,13 @@ public class EditClientFragment extends Fragment {
     private Button mExpandOtherButton;
     private Button mExpandExpectationsButton;
 
+    /**
+     * required interface in hosting activities
+     */
+    public interface Callbacks
+    {
+        void onContactFragmentRequested(Client client);
+    }
 
     public static EditClientFragment newInstance(UUID id)
     {
@@ -63,6 +80,18 @@ public class EditClientFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+    /**
+     * Only pass activities, not any other context, or app will crash.
+     * @param activity the hosting activity
+     */
+    @Override
+    public void onAttach(Context activity)
+    {
+        super.onAttach(activity);
+        mCallbacks = (Callbacks) activity;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -141,73 +170,33 @@ public class EditClientFragment extends Fragment {
         });
 
         mDOBEditText = view.findViewById(R.id.date_edit_text);
-        if(mClient.getDateOfBirthString() != null)
+        if(mClient.getDateOfBirth() != null)
         {
-            mDOBEditText.setText(mClient.getDateOfBirthString());
+            mDOBEditText.setText(DateFormat.getDateInstance(DateFormat.MEDIUM).format(mClient.getDateOfBirth()));
         }
-        mDOBEditText.addTextChangedListener(new TextWatcher() {
+        mDOBEditText.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void onClick(View view) {
+                Calendar calendar =  Calendar.getInstance();
+                if(mClient.getDateOfBirth()==null)
+                {
+                    calendar.setTime(new Date());
+                }
+                else {
+                    calendar.setTime(mClient.getDateOfBirth());
+                }
+                int year = calendar.get(calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                final int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                final int minute = calendar.get(Calendar.MINUTE);
+                mClient.setDateOfBirth(new GregorianCalendar(year, month, day).getTime());
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(charSequence.length()==0 || charSequence.toString().trim()=="")
-                    mClient.setDateOfBirthString(null);
-                else mClient.setDateOfBirthString(charSequence.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        mLocationEditText = view.findViewById(R.id.location_edit_text);
-        if(mClient.getLocation() != null)
-        {
-            mLocationEditText.setText(mClient.getLocation());
-        }
-        mLocationEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(charSequence.length()==0 || charSequence.toString().trim()=="")
-                    mClient.setLocation(null);
-                else mClient.setLocation(charSequence.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        mTimeZoneEditText = view.findViewById(R.id.timezone_edit_text);
-        if(mClient.getTimeZone() != null)
-        {
-            mTimeZoneEditText.setText(mClient.getTimeZone());
-        }
-        mTimeZoneEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(charSequence.length()==0 || charSequence.toString().trim()=="")
-                    mClient.setTimeZone(null);
-                else mClient.setTimeZone(charSequence.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
+                FragmentManager fragmentManager = getFragmentManager();
+                DateDialogFragment dialog = DateDialogFragment.newInstance(mClient.getDateOfBirth(),
+                        getResources().getString(R.string.choose_date_session));
+                dialog.setTargetFragment(EditClientFragment.this, REQUEST_DOB);
+                dialog.show(fragmentManager, DIALOG_DOB);
 
             }
         });
@@ -221,6 +210,19 @@ public class EditClientFragment extends Fragment {
             }
         });
 
+        mExpandContactButton = view.findViewById(R.id.expand_contact_info);
+        mExpandContactButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mClient.getFirstName()==null && mClient.getLastName()==null){
+                    createNoNameDialog();
+                }
+                else {
+                    DatabaseHandler.get(getActivity()).updateClient(mClient);
+                    mCallbacks.onContactFragmentRequested(mClient);
+                }
+            }
+        });
         mExpandDietButton = view.findViewById(R.id.expand_diet_button);
         mExpandDietButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -335,6 +337,14 @@ public class EditClientFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDetach()
+    {
+        super.onDetach();
+        mCallbacks = null;
+    }
+
+
     private void createNoNameDialog()
     {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -350,5 +360,19 @@ public class EditClientFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(resultCode != Activity.RESULT_OK) {
+            return;
+        }
+        if(requestCode==REQUEST_DOB)
+        {
+            Date date = (Date) data.getSerializableExtra(EXTRA_DATE);
+            mClient.setDateOfBirth(date);
+            mDOBEditText.setText(DateFormat.getDateInstance().format(date));
+        }
     }
 }

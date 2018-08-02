@@ -2,6 +2,7 @@ package com.stanislavveliky.coachingapp;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,21 +17,23 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
- * Created by Stanislav Ostrovskii on 7/21/2018.
+ * Created by Stanislav Ostrovskii on 7/24/2018.
  * Copyright (c) 2018 Stanislav Ostrovskii
  */
-
-public class SessionDateDialogFragment extends DialogFragment {
+public class DateDialogFragment extends DialogFragment {
 
     private static final String ARG_DATE = "date";
-
+    private static final String ARG_TITLE = "title";
+    private AlertDialog.Builder mBuilder;
     private DatePicker mDatePicker;
 
-    public static SessionDateDialogFragment newInstance(Date date)
+
+    public static DateDialogFragment newInstance(Date date, String title)
     {
         Bundle args = new Bundle();
         args.putSerializable(ARG_DATE, date);
-        SessionDateDialogFragment fragment = new SessionDateDialogFragment();
+        args.putString(ARG_TITLE, title);
+        DateDialogFragment fragment = new DateDialogFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -38,8 +41,10 @@ public class SessionDateDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-
+        mBuilder = new AlertDialog.Builder(getContext());
+        String title = getArguments().getString(ARG_TITLE);
         Date date = (Date) getArguments().getSerializable(ARG_DATE);
+
         Calendar calendar =  Calendar.getInstance();
         calendar.setTime(date);
         int year = calendar.get(calendar.YEAR);
@@ -49,12 +54,11 @@ public class SessionDateDialogFragment extends DialogFragment {
         final int minute = calendar.get(Calendar.MINUTE);
 
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_date, null);
-        mDatePicker = view.findViewById(R.id.session_date_picker);
+        mDatePicker = view.findViewById(R.id.date_picker);
         mDatePicker.init(year, month, day, null);
 
-        return new AlertDialog.Builder(getActivity())
-                .setView(view)
-                .setTitle(R.string.choose_date_session)
+        mBuilder.setView(view)
+                .setTitle(title)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -65,7 +69,8 @@ public class SessionDateDialogFragment extends DialogFragment {
                         Date date = new GregorianCalendar(year, month, day, hour, minute).getTime();
                         sendResult(Activity.RESULT_OK, date);
                     }
-                }).create();
+                });
+        return mBuilder.create();
     }
 
     private void sendResult(int resultCode, Date date)

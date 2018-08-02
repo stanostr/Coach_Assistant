@@ -5,17 +5,27 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
+
+import com.stanislavveliky.coachingapp.model.Client;
 
 import java.util.UUID;
+
+import static com.stanislavveliky.coachingapp.PagerAdapter.CONTACT_INFO_FRAGMENT;
 
 /**
  * Created by Stanislav Ostrovskii on 7/17/2018.
  * Copyright (c) 2018 Stanislav Ostrovskii
  */
 
-public class ExistingClientActivity extends AppCompatActivity implements SessionListTabFragment.OnFragmentInteractionListener, EditClientFragment.OnFragmentInteractionListener {
+public class ExistingClientActivity extends AppCompatActivity
+        implements SessionListTabFragment.OnFragmentInteractionListener,
+        EditClientFragment.OnFragmentInteractionListener,
+        EditClientFragment.Callbacks
+{
 
     private static final String TAG = "ExistingClientActivity";
     TabLayout mTabLayout;
@@ -38,8 +48,9 @@ public class ExistingClientActivity extends AppCompatActivity implements Session
         setContentView(R.layout.activity_tab);
         mClientId = (UUID) getIntent().getSerializableExtra(EXTRA_CLIENT_ID);
         mTabLayout = findViewById(R.id.tab_layout);
-        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.client_info));
+        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.info));
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.sessions));
+        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.contact));
         mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         mViewPager = findViewById(R.id.pager);
@@ -68,5 +79,10 @@ public class ExistingClientActivity extends AppCompatActivity implements Session
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onContactFragmentRequested(Client client) {
+       mViewPager.setCurrentItem(CONTACT_INFO_FRAGMENT);
     }
 }

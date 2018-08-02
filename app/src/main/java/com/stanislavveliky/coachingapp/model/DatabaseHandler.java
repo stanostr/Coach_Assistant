@@ -11,8 +11,6 @@ import com.stanislavveliky.coachingapp.database.ClientDatabaseHelper;
 import com.stanislavveliky.coachingapp.database.ApplicationCursorWrapper;
 import com.stanislavveliky.coachingapp.database.DbSchema.ClientTable;
 
-import java.lang.reflect.Array;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
@@ -66,6 +64,36 @@ public class DatabaseHandler {
 
         return clientList;
     }
+
+    public ArrayList<Client> getClientsWithSearchStringInName(String searchString)
+    {
+        ArrayList<Client> clientList = new ArrayList<>();
+        searchString = searchString.trim();
+        String[] whereArgs = {"%" + searchString + "%", "%" + searchString + "%"};
+        String whereClause = ClientTable.Cols.FIRST_NAME  + " like ? collate nocase or "
+                + ClientTable.Cols.LAST_NAME + " like ? collate nocase";
+        if(searchString.contains(" ")) {
+            whereArgs = searchString.split(" ");
+            whereArgs[0] =  "%" + whereArgs[0];
+            whereArgs[1] =  whereArgs[1] + "%";
+            whereClause = ClientTable.Cols.FIRST_NAME  + " like ? collate nocase and "
+                    + ClientTable.Cols.LAST_NAME + " like ? collate nocase";
+        }
+
+        ApplicationCursorWrapper cursorWrapper = queryClients(whereClause, whereArgs);
+        try {
+            cursorWrapper.moveToFirst();
+            while(!cursorWrapper.isAfterLast())
+            {
+                clientList.add(cursorWrapper.getClient());
+                cursorWrapper.moveToNext();
+            }
+        } finally {
+            cursorWrapper.close();
+        }
+        return clientList;
+    }
+
 
     public Client getClientByID(UUID uuid)
     {
@@ -218,9 +246,14 @@ public class DatabaseHandler {
         values.put(ClientTable.Cols.ID, client.getId().toString());
         values.put(ClientTable.Cols.FIRST_NAME, client.getFirstName());
         values.put(ClientTable.Cols.LAST_NAME, client.getLastName());
+        values.put(ClientTable.Cols.PHONE_NUMBER, client.getPhoneNumber());
+        values.put(ClientTable.Cols.EMAIL, client.getEmail());
         values.put(ClientTable.Cols.LOCATION, client.getLocation());
-        values.put(ClientTable.Cols.TIME_ZONE, client.getTimeZone());
+        values.put(ClientTable.Cols.TIME_ZONE, client.getTimeZoneString());
         values.put(ClientTable.Cols.DOB, client.getDateOfBirthString());
+        if(client.getDateOfBirth()!=null) {
+            values.put(ClientTable.Cols.DATE_OF_BIRTH, client.getDateOfBirth().getTime());
+        }
         values.put(ClientTable.Cols.GENDER, (client.isGender())? 1: 0);
         values.put(ClientTable.Cols.EXERCISE, client.getExercise());
         values.put(ClientTable.Cols.DIET, client.getDiet());
@@ -243,7 +276,7 @@ public class DatabaseHandler {
     }
 
     @NonNull
-    private ApplicationCursorWrapper queryClients(String whereClause, String[] whereArgs)
+    public ApplicationCursorWrapper queryClients(String whereClause, String[] whereArgs)
     {
         Cursor cursor =  mDatabase.query(ClientTable.NAME, null,
                 whereClause, whereArgs, null, null, null);

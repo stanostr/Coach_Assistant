@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.stanislavveliky.coachingapp">
-
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,6 +10,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ClientListActivity">
+            <meta-data android:name="android.app.default_searchable"
+                       android:value=".SearchableClientActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -26,10 +28,26 @@
         <activity android:name=".ExistingClientActivity"
                   android:parentActivityName=".ClientListActivity"
                   android:windowSoftInputMode="stateAlwaysHidden"
-                  android:launchMode="singleTop"/>
+                  android:launchMode="singleTop">
+
+        </activity>
         <activity android:name=".SessionActivity"
                   android:parentActivityName=".ExistingClientActivity"
                   android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+        <activity android:name=".ContactInfoActivity"
+                  android:parentActivityName=".NewClientActivity"
+                  android:windowSoftInputMode="stateAlwaysHidden"
+                  android:launchMode="singleTop">
+        </activity>
+        <activity android:name=".SearchableClientActivity"
+                  android:parentActivityName=".ClientListActivity"
+                  android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
+        </activity>
     </application>
 
 </manifest>

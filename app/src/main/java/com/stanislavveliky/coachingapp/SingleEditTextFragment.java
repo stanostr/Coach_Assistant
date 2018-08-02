@@ -17,15 +17,18 @@ import com.stanislavveliky.coachingapp.model.DatabaseHandler;
 
 import java.io.Serializable;
 import java.util.UUID;
-
-import static com.stanislavveliky.coachingapp.SingleEditTextFragmentActivity.*;
-
 /**
  * Created by Stanislav Ostrovskii on 7/5/2018.
  * Copyright (c) 2018 Stanislav Ostrovskii
  */
 
 public class SingleEditTextFragment extends Fragment {
+    static final int DIET_FRAGMENT = 0;
+    static final int SLEEP_FRAGMENT = 1;
+    static final int EXERCISE_FRAGMENT = 2;
+    static final int SUBSTANCE_FRAGMENT = 3;
+    static final int OTHER_FRAGMENT = 4;
+    static final int EXPECTATIONS_FRAGMENT = 5;
     private static final String ARG_FRAGMENT_TYPE = "fragment_type";
     private static final String ARG_CLIENT_ID = "cliend_id";
     private int mType;
@@ -73,7 +76,6 @@ public class SingleEditTextFragment extends Fragment {
                         @Override
                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                             mClient.setDiet(charSequence.toString());
-                            Toast.makeText(getActivity(), mClient.getDiet(), Toast.LENGTH_SHORT).show();
                         }
 
                         @Override

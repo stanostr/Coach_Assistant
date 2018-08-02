@@ -12,6 +12,10 @@ import java.util.UUID;
  */
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
+    public static final int EDIT_CLIENT_FRAGMENT = 0;
+    public static final int SESSION_LIST_FRAGMENT = 1;
+    public static final int CONTACT_INFO_FRAGMENT = 2;
+
     private int mNumTabs;
     private UUID mClientId;
 
@@ -26,9 +30,12 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position)
         {
-            case 0:
+            case EDIT_CLIENT_FRAGMENT:
                 return EditClientFragment.newInstance(mClientId);
-            case 1: return SessionListTabFragment.newInstance(mClientId);
+            case SESSION_LIST_FRAGMENT:
+                return SessionListTabFragment.newInstance(mClientId);
+            case CONTACT_INFO_FRAGMENT:
+                return ContactInfoFragment.newInstance(mClientId);
             default: return null;
 
         }

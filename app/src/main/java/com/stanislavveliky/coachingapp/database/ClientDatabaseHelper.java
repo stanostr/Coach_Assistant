@@ -13,7 +13,7 @@ import com.stanislavveliky.coachingapp.model.Client;
  */
 
 public class ClientDatabaseHelper extends SQLiteOpenHelper {
-    private static final int VERSION = 1;
+    private static final int VERSION = 6;
     private static final String DATABASE_NAME = "ClientDatabase.db";
 
     public ClientDatabaseHelper(Context context)
@@ -25,12 +25,18 @@ public class ClientDatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db)
     {
         db.execSQL("create table " + ClientTable.NAME + "(" +
-                ClientTable.Cols.ID + " text primary key, " +
+                " _id integer primary key autoincrement, " +
+                ClientTable.Cols.ID + " text unique, " +
                 ClientTable.Cols.FIRST_NAME + " text, " +
                 ClientTable.Cols.LAST_NAME + " text, " +
+
                 ClientTable.Cols.LOCATION + " text, " +
+                ClientTable.Cols.PHONE_NUMBER + " text, " +
+                ClientTable.Cols.EMAIL + " text, " +
                 ClientTable.Cols.TIME_ZONE + " text, " +
+
                 ClientTable.Cols.DOB + " text, " +
+                ClientTable.Cols.DATE_OF_BIRTH + " text, " +
                 ClientTable.Cols.GENDER + " integer, " +
                 ClientTable.Cols.EXERCISE + " text, " +
                 ClientTable.Cols.DIET + " text, " +
@@ -41,12 +47,11 @@ public class ClientDatabaseHelper extends SQLiteOpenHelper {
                 ClientTable.Cols.IS_ACTIVE + " integer )"
         );
         db.execSQL("create table " + SessionTable.NAME + "(" +
+                " _id integer primary key autoincrement, " +
                 SessionTable.Cols.CLIENT_ID + " text, " +
-                SessionTable.Cols.DATE + " text, " +
+                SessionTable.Cols.DATE + " text unique, " +
                 SessionTable.Cols.NOTES + " text, " +
                 SessionTable.Cols.IS_PAID + " integer, " +
-                "primary key (" + SessionTable.Cols.CLIENT_ID + ", " +
-                SessionTable.Cols.DATE + "), " +
                 " foreign key (" + SessionTable.Cols.CLIENT_ID + ") references " +
                 ClientTable.NAME + "(" + ClientTable.Cols.ID + "))"
         );
