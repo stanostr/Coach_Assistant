@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CoachingApp.iml" filepath="$PROJECT_DIR$/CoachingApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/timezonepro/timezonepro.iml" filepath="$PROJECT_DIR$/timezonepro/timezonepro.iml" />
     </modules>
   </component>
 </project>
