@@ -7,19 +7,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import org.joda.time.DateTimeZone;
+
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 import static com.stanislavveliky.coachingapp.ContactInfoFragment.EXTRA_TIMEZONE;
 
@@ -33,10 +34,10 @@ implements AdapterView.OnItemSelectedListener {
     private static final String TAG = "TimezoneDialogFragment";
     private static final String ARG_TIMEZONE = "timezone";
     private Spinner mSpinner;
-    private TimeZone mTimeZone;
+    private DateTimeZone mTimeZone;
 
 
-    public static TimezoneDialogFragment newInstance(TimeZone timeZone)
+    public static TimezoneDialogFragment newInstance(DateTimeZone timeZone)
     {
         Bundle args = new Bundle();
         args.putSerializable(ARG_TIMEZONE, timeZone);
@@ -48,13 +49,11 @@ implements AdapterView.OnItemSelectedListener {
     @Override
     public Dialog onCreateDialog(Bundle bundle)
     {
-        mTimeZone = (TimeZone) getArguments().getSerializable(ARG_TIMEZONE);
+        mTimeZone = (DateTimeZone) getArguments().getSerializable(ARG_TIMEZONE);
         if(mTimeZone==null)
         {
-            mTimeZone = TimeZone.getDefault();
+            mTimeZone = DateTimeZone.getDefault();
         }
-
-
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_spinner, null);
         mSpinner = view.findViewById(R.id.timezone_spinner);
         populateAndUpdateTimeZone();
@@ -76,12 +75,14 @@ implements AdapterView.OnItemSelectedListener {
     private void populateAndUpdateTimeZone() {
 
         //populate spinner with a simplified list of timezones
-        ArrayList<TimeZone> idList = getFilteredTimezoneList();
+        ArrayList<DateTimeZone> idList = getTimezoneList();
         String[] displayNameArray = new String[idList.size()];
         for(int i=0; i<idList.size(); i++)
         {
-            displayNameArray[i] = idList.get(i).getDisplayName();
+            String name = idList.get(i).getName(new Date().getTime());
+            displayNameArray[i] = name;
         }
+        Arrays.sort(displayNameArray);
         ArrayAdapter idAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item,
                 displayNameArray);
         idAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -89,48 +90,32 @@ implements AdapterView.OnItemSelectedListener {
 
         // now set the spinner to default timezone from the time zone settings
         for (int i = 0; i < idAdapter.getCount(); i++) {
-            if (idAdapter.getItem(i).equals(mTimeZone.getDisplayName())) {
+            if (idAdapter.getItem(i).equals(mTimeZone.getName(new Date().getTime()))) {
                 mSpinner.setSelection(i);
             }
         }
     }
 
-    public static ArrayList<TimeZone> getFilteredTimezoneList()
+    public static ArrayList<DateTimeZone> getTimezoneList()
     {
-        String[] temp = TimeZone.getAvailableIDs();
-        List<String> timezoneList = new ArrayList<String>();
-        ArrayList<TimeZone> simplifiedTimezoneList = new ArrayList<TimeZone>();
-        for (String tz : temp)
+        ArrayList<DateTimeZone> timeZones = new ArrayList<>();
+        for(String timezoneID: TimeZone.getAvailableIDs())
         {
-            timezoneList.add(tz);
-        }
-        Collections.sort(timezoneList);
-        String filterList = "Canada|Mexico|Chile|Cuba|Brazil|Japan|Turkey|Mideast|Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific";
-        Pattern p = Pattern.compile("^(" + filterList + ").*");
-        for (String tz : timezoneList)
-        {
-            Matcher m = p.matcher(tz);
-            if (m.find())
-            {
-                TimeZone timeZone = TimeZone.getTimeZone(tz);
-                Iterator<TimeZone> iter = simplifiedTimezoneList.iterator();
-                while (iter.hasNext()) {
-                    TimeZone t = iter.next();
-                    if (t.getDisplayName().equals(timeZone.getDisplayName()))
-                        iter.remove();
-                }
-                simplifiedTimezoneList.add(TimeZone.getTimeZone(tz));
+            try {
+                timeZones.add(DateTimeZone.forTimeZone(TimeZone.getTimeZone(timezoneID)));
+            } catch (IllegalArgumentException e) {
+
             }
         }
-        return simplifiedTimezoneList;
+        return timeZones;
     }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         String item = adapterView.getItemAtPosition(i).toString();
-        for (String availId : TimeZone.getAvailableIDs()) {
-            if (item.trim().equalsIgnoreCase(TimeZone.getTimeZone(availId).getDisplayName())) {
-                mTimeZone = TimeZone.getTimeZone(availId);
+        for (String availId : DateTimeZone.getAvailableIDs()) {
+            if (item.trim().equalsIgnoreCase(DateTimeZone.forID(availId).getName(new Date().getTime()))) {
+                mTimeZone = DateTimeZone.forID(availId);
                 break;
             }
         }
@@ -141,7 +126,7 @@ implements AdapterView.OnItemSelectedListener {
 
     }
 
-    private void sendResult(int resultCode, TimeZone timezone)
+    private void sendResult(int resultCode, DateTimeZone timezone)
     {
         if(getTargetFragment()==null)
         {

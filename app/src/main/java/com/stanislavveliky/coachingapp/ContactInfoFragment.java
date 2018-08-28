@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
@@ -13,18 +12,21 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.stanislavveliky.coachingapp.model.Client;
 import com.stanislavveliky.coachingapp.model.DatabaseHandler;
 
+import org.joda.time.DateTimeZone;
+
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -40,6 +42,7 @@ public class ContactInfoFragment extends Fragment {
     private static final String ARG_CLIENT_ID = "client_id";
     private static final int REQUEST_TIMEZONE = 0;
     private static final String DIALOG_TIMEZONE = "DialogTimezone";
+    private static final String TAG = "ContactInfoFragment";
     private Client mClient;
 
     private ImageButton mEditPhone;
@@ -56,7 +59,7 @@ public class ContactInfoFragment extends Fragment {
     private EditText mLocationText;
     private Button mTimezoneButton;
 
-    private TimeZone mClientZone;
+    private DateTimeZone mClientZone;
 
     public static ContactInfoFragment newInstance(UUID clientId)
     {
@@ -74,7 +77,7 @@ public class ContactInfoFragment extends Fragment {
         UUID uuid = (UUID) getArguments().getSerializable(ARG_CLIENT_ID);
         mClient = DatabaseHandler.get(getActivity()).getClientByID(uuid);
         if(mClient.getTimeZoneString()!=null) {
-            mClientZone = TimeZone.getTimeZone(mClient.getTimeZoneString());
+            mClientZone = DateTimeZone.forID(mClient.getTimeZoneString());
         }
     }
 
@@ -130,8 +133,20 @@ public class ContactInfoFragment extends Fragment {
             public void onClick(View view) {
                 if(mClient.getPhoneNumber()!=null)
                 {
-                    TimeZone tz = TimeZone.getTimeZone(mClient.getTimeZoneString());
+                    if(mClient.getTimeZoneString()==null)
+                    {
+                        noTimezoneIssuesDialog();
+                        return;
+                    }
+                    TimeZone tz = DateTimeZone.forID(mClient.getTimeZoneString()).toTimeZone();
+
                     Calendar c = Calendar.getInstance(tz);
+                    boolean isDST = tz.inDaylightTime(new Date());
+                    if(isDST) {
+                        int sec = tz.getDSTSavings() / 1000;// for no. of seconds
+                        Log.d(TAG, " is in DST " + sec);
+                        c.add(Calendar.SECOND, sec);
+                    }
                     if(c.get(Calendar.HOUR_OF_DAY)<8 || c.get(Calendar.HOUR_OF_DAY) >21) {
                         String am_pm = " AM";
                         if (c.get(Calendar.AM_PM) == Calendar.PM) {
@@ -141,6 +156,7 @@ public class ContactInfoFragment extends Fragment {
                         String time = String.format("%02d", c.get(Calendar.HOUR)) + ":" +
                                 String.format("%02d", c.get(Calendar.MINUTE)) + am_pm;
                         new AlertDialog.Builder(getActivity()).setTitle(R.string.call_prompt)
+                                .setIcon(android.R.drawable.ic_menu_call)
                                 .setMessage(String.format(getResources().getString(R.string.client_time_warning), time))
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     @Override
@@ -157,17 +173,7 @@ public class ContactInfoFragment extends Fragment {
                                 .show();
                     }
                     else {
-                        new AlertDialog.Builder(getActivity()).setTitle(R.string.call_prompt)
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        startCallActivity();
-                                    }
-                                }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        }).setIcon(android.R.drawable.ic_menu_call).show();
+                       noTimezoneIssuesDialog();
                     }
                 }
             }
@@ -336,17 +342,6 @@ public class ContactInfoFragment extends Fragment {
         return view;
     }
 
-    private int computeTimeDifference() {
-        TimeZone timeZone = TimeZone.getTimeZone(mClient.getTimeZoneString());
-        if(timeZone==null) {
-            //too bad!
-            return 0;
-        }
-        int millisecondsInHour = 3600000;
-        int theirOffset = timeZone.getOffset(System.currentTimeMillis())/millisecondsInHour;
-        int myOffset = TimeZone.getDefault().getOffset(System.currentTimeMillis())/millisecondsInHour;
-        return Math.abs(theirOffset-myOffset);
-    }
 
     private View.OnClickListener timezoneClickListener()
     {
@@ -375,9 +370,9 @@ public class ContactInfoFragment extends Fragment {
         }
         if(requestCode==REQUEST_TIMEZONE)
         {
-            mClientZone = (TimeZone) data.getSerializableExtra(EXTRA_TIMEZONE);
+            mClientZone = (DateTimeZone) data.getSerializableExtra(EXTRA_TIMEZONE);
             mClient.setTimeZoneString(mClientZone.getID());
-            mTimezoneButton.setText(mClientZone.getDisplayName());
+            mTimezoneButton.setText(mClientZone.getName(new Date().getTime()));
             DatabaseHandler.get(getActivity()).updateClient(mClient);
         }
     }
@@ -393,5 +388,21 @@ public class ContactInfoFragment extends Fragment {
         dialIntent.setData(Uri.parse("tel:"+ mClient.getPhoneNumber()));//change the number
         startActivity(dialIntent);
     }
+
+    private void noTimezoneIssuesDialog()
+    {
+        new AlertDialog.Builder(getActivity()).setTitle(R.string.call_prompt)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startCallActivity();
+                    }
+                }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        }).setIcon(android.R.drawable.ic_menu_call).show();
+    }
+
 
 }

@@ -43,10 +43,4 @@ public class DbSchema {
             public static final String NOTES = "notes";
         }
     }
-
-    public static final class TimezoneTable {
-        public static final String NAME = "timezones";
-
-    }
-
 }

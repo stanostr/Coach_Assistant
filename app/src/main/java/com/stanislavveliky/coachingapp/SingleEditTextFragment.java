@@ -86,7 +86,7 @@ public class SingleEditTextFragment extends Fragment {
                     break;
                 case SLEEP_FRAGMENT:
                     ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.sleep_patterns);
-                    mEditText.setHint(mClient.getSleep());
+                    mEditText.setText(mClient.getSleep());
                     mEditText.addTextChangedListener(new TextWatcher() {
                         @Override
                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -106,7 +106,7 @@ public class SingleEditTextFragment extends Fragment {
                     break;
                 case EXERCISE_FRAGMENT:
                     ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.exercise);
-                    mEditText.setHint(mClient.getExercise());
+                    mEditText.setText(mClient.getExercise());
                     mEditText.addTextChangedListener(new TextWatcher() {
                         @Override
                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -126,7 +126,7 @@ public class SingleEditTextFragment extends Fragment {
                     break;
                 case SUBSTANCE_FRAGMENT:
                     ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.substance_use);
-                    mEditText.setHint(mClient.getSubstanceUse());
+                    mEditText.setText(mClient.getSubstanceUse());
                     mEditText.addTextChangedListener(new TextWatcher() {
                         @Override
                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -146,7 +146,7 @@ public class SingleEditTextFragment extends Fragment {
                     break;
                 case OTHER_FRAGMENT:
                     ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.additional_info);
-                    mEditText.setHint(mClient.getOtherDetails());
+                    mEditText.setText(mClient.getOtherDetails());
                     mEditText.addTextChangedListener(new TextWatcher() {
                         @Override
                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -166,7 +166,7 @@ public class SingleEditTextFragment extends Fragment {
                     break;
                 case EXPECTATIONS_FRAGMENT:
                     ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.expectations);
-                    mEditText.setHint(mClient.getExpectations());
+                    mEditText.setText(mClient.getExpectations());
                     mEditText.addTextChangedListener(new TextWatcher() {
                         @Override
                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
